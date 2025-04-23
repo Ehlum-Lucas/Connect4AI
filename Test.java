@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Test {
@@ -17,6 +19,25 @@ public class Test {
         }
     }
 
+    private static Map<String, Object> compute_average_time(long time, int total) {
+        long averageTime = time / total;
+        Map<String, Object> result = new HashMap<>();
+        if (averageTime >= 1_000_000_000) {
+            result.put("value", averageTime / 1_000_000_000.0);
+            result.put("unit", " seconds");
+        } else if (averageTime >= 1_000_000) {
+            result.put("value", averageTime / 1_000_000.0);
+            result.put("unit", " milliseconds");
+        } else if (averageTime >= 1_000) {
+            result.put("value", averageTime / 1_000.0);
+            result.put("unit", " microseconds");
+        } else {
+            result.put("value", averageTime);
+            result.put("unit", " nanoseconds");
+        }
+        return result;
+    }
+
     public void test_ai() {
         int score = 0;
         int nodes = 0;
@@ -28,7 +49,7 @@ public class Test {
             Position pos = new Position();
             pos.play(results[0]);
             long start = System.nanoTime();
-            int[] ai_results = ai.solve(pos, 13 );
+            int[] ai_results = ai.solve(pos, 9 );
             long end = System.nanoTime();
             time += end - start;
             if (ai_results[1] == Integer.parseInt(results[1])) {
@@ -39,16 +60,8 @@ public class Test {
         }
         System.out.println("Score: " + score + "/" + total);
         System.out.println("Average node visited: " + nodes / total);
-        long averageTime = time / total;
-        if (averageTime >= 1_000_000_000) {
-            System.out.println("Average time: " + (averageTime / 1_000_000_000.0) + " seconds");
-        } else if (averageTime >= 1_000_000) {
-            System.out.println("Average time: " + (averageTime / 1_000_000.0) + " milliseconds");
-        } else if (averageTime >= 1_000) {
-            System.out.println("Average time: " + (averageTime / 1_000.0) + " microseconds");
-        } else {
-            System.out.println("Average time: " + averageTime + " nanoseconds");
-        }
+        Map<String, Object> result = compute_average_time(time, total);
+        System.out.println("Average time: " + result.get("value") + result.get("unit"));
     }
 
     public static void main(String[] args) {
