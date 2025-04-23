@@ -31,7 +31,8 @@ public class ConnectFourAI {
 
     public int[] solve(Position pos, int depth) {
         nodes = 0;
-        return negamax(pos, depth); // Return the best move
+        int[] results = negamax(pos, depth);
+        return new int[] {results[0], results[1], (int) nodes};
     }
 
     public long getNodes() {
