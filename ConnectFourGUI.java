@@ -1,10 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class ConnectFourGUI extends JFrame {
     private final int ROWS = 6;
     private final int COLS = 7;
-    private JButton[] columnButtons;
     private int[][] board;
     private boolean playerTurn = true;
     private boolean singlePlayerMode = true;
@@ -14,27 +15,13 @@ public class ConnectFourGUI extends JFrame {
 
     public ConnectFourGUI() {
         setTitle("Connect 4");
-        setSize(710, 670);
+        setSize(700, 635);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         board = new int[ROWS][COLS];
         position = new Position();
         ai = new ConnectFourAI();
-
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        columnButtons = new JButton[COLS];
-        for (int i = 0; i < COLS; i++) {
-            int col = i;
-            columnButtons[i] = new JButton("↓");
-            columnButtons[i].setFont(new Font("Arial", Font.BOLD, 20));
-            columnButtons[i].setPreferredSize(new Dimension(100, 40));
-            columnButtons[i].setMaximumSize(new Dimension(100, 40));
-            columnButtons[i].addActionListener(e -> handleMove(col));
-            topPanel.add(columnButtons[i]);
-        }
-        add(topPanel, BorderLayout.NORTH);
 
         add(new BoardPanel(), BorderLayout.CENTER);
 
@@ -99,7 +86,6 @@ public class ConnectFourGUI extends JFrame {
 
         board[row][bestCol] = 2;
 
-
         if (position.isWinningMove(bestCol)) {
             JOptionPane.showMessageDialog(this, "AI wins!");
             resetGame();
@@ -127,6 +113,16 @@ public class ConnectFourGUI extends JFrame {
     }
 
     private class BoardPanel extends JPanel {
+        public BoardPanel() {
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int col = e.getX() / 100; // Determine the column based on the x-coordinate
+                    handleMove(col);
+                }
+            });
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
