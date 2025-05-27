@@ -1,7 +1,8 @@
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 public class Game {
-    private ConnectFourAI ai = new ConnectFourAI();
+    private ConnectFourAI ai = new ConnectFourAI(new ConnectFourAI.MapBasedTT(new LinkedHashMap<>()));
     private Position pos = new Position();
     private Scanner scanner = new Scanner(System.in);
 
