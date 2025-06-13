@@ -1,20 +1,41 @@
+import java.util.Random;
+
 public class Position {
     static final int WIDTH = 7;
     static final int HEIGHT = 6;
+    private static final int NUM_PLAYERS = 2;
     private int[][] board;
     private int[] height;
     private int moves;
+    private long currentZobristHash;
+
+    // Zobrist keys: [column][row][player_index]
+    // player_index 0 for player 1, player_index 1 for player 2
+    private static final long[][][] zobristKeys = new long[WIDTH][HEIGHT][NUM_PLAYERS];
+    private static final Random random = new Random();
+
+    static {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                for (int k = 0; k < NUM_PLAYERS; k++) {
+                    zobristKeys[i][j][k] = random.nextLong();
+                }
+            }
+        }
+    }
 
     public Position() {
         board = new int[WIDTH][HEIGHT];
         height = new int[WIDTH];
         moves = 0;
+        currentZobristHash = 0L;
     }
 
     public Position(Position pos) {
         board = new int[WIDTH][HEIGHT];
         height = new int[WIDTH];
         moves = pos.moves;
+        currentZobristHash = pos.currentZobristHash;
         for (int x = 0; x < WIDTH; x++) {
             height[x] = pos.height[x];
             for (int y = 0; y < HEIGHT; y++) {
@@ -45,6 +66,7 @@ public class Position {
 
     public void play(int col) {
         board[col][height[col]] = moves % 2 + 1;
+        currentZobristHash ^= zobristKeys[col][height[col]][moves % 2];
         height[col]++;
         moves++;
     }
@@ -69,5 +91,9 @@ public class Position {
 
     public int getMoves() {
         return moves;
+    }
+
+    public long getZobristHash() {
+        return currentZobristHash;
     }
 }
